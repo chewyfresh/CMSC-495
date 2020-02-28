@@ -1,0 +1,1 @@
+# Delete the class passed in
