@@ -1,5 +1,9 @@
 '''
 database.py stores fitness data for the cyberfitness application.
+
+20200223 -- Jacob Cochran created the inital database with some methods.
+20200301 -- Jacob Cochran added additional methods.
+
 '''
 
 import os
@@ -25,8 +29,7 @@ class database(object):
     
     def create_table(self):
         '''
-        Creates an empty database if the file does not
-        already exist.
+        Creates an empty database if the file does not already exist.
         '''
         
         if os.path.isfile(self.database_name + "." + self.version + ".db") == False:
@@ -57,8 +60,8 @@ class database(object):
     
     def db_insert(self, username, password, class_name, class_data):
         '''
-        Inserts fitness data to user's database. Returns -1 if user does not exists.
-        Currently does not handle if class_name already exists.
+        Inserts/updates fitness data to a user's database. Returns -1 if authentication 
+        fails.
         
         :param username: Username.
         :param password: User's password.
@@ -74,7 +77,7 @@ class database(object):
                     if i.get('password') == password:
                         user_data = pickle_file
         if user_data == None:
-            return -1
+            return -1   # Failed authentication
         for index, i in enumerate(pickle_file):
             if i.get('name') == username:
                 pickle_file[index].update({class_name : class_data})
@@ -82,12 +85,35 @@ class database(object):
             pickle.dump(user_data, write_db)
     
     
-    #def db_update(self):
+    def db_delete(self, username, password, class_name):
+        '''
+        Removes fitness data from a user's database. Returns -1 if authentication 
+        fails.
+        
+        :param username: Username.
+        :param password: User's password.
+        :param class_name: User's class name.
+        '''
+        
+        user_data = None
+        with open(self.database_name + "." + self.version + ".db", 'rb') as open_db:
+            pickle_file = pickle.load(open_db)
+            for i in pickle_file[1:]:
+                if i.get('name') == username:
+                    if i.get('password') == password:
+                        user_data = pickle_file
+        if user_data == None:
+            return -1   # Failed authentication
+        for index, i in enumerate(pickle_file):
+            if i.get('name') == username:
+                pickle_file[index].pop(class_name)
+        with open(self.database_name + "." + self.version + ".db", 'wb') as write_db:
+            pickle.dump(user_data, write_db)
     
     
     def db_query(self, username, password):
         '''
-        Returns data on user. Returns -1 if user does not exists.
+        Returns data on user. Returns -1 if authentication fails.
         
         :param username: Username.
         :param password: User's password.
@@ -99,7 +125,7 @@ class database(object):
                 if i.get('name') == username:
                     if i.get('password') == password:
                         return i
-            return -1
+            return -1   # Failed authentication
 
 
 if __name__ == '__main__':
@@ -116,6 +142,11 @@ if __name__ == '__main__':
     print(test.db_query("jason", "abc123!!!"))
     print(test.db_query("bob", "password"))
     test.db_insert("bill", "abc123!!!", "running", "2miles")
+    test.db_insert("bill", "abc123!!!", "swimming", "1mile")
+    print(test.db_query("bill", "abc123!!!"))
+    test.db_insert("bill", "abc123!!!", "running", "3miles")
+    print(test.db_query("bill", "abc123!!!"))
+    test.db_delete("bill", "abc123!!!", "running")
     print(test.db_query("bill", "abc123!!!"))
     
     
