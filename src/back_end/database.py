@@ -1,6 +1,14 @@
 '''
 database.py stores fitness data for the cyberfitness application.
 
+The basic structure of the database is as follows:
+    [
+    {'database_name': database_name, 'version': version}
+    {'name': username, 'password': password, 'classname': fitness_data, 'classname': fitness_data, etc...}
+    {'name': username, 'password': password, 'classname': fitness_data, 'classname': fitness_data, etc...}
+    etc...
+    ]
+
 20200223 -- Jacob Cochran created the inital database with some methods.
 20200301 -- Jacob Cochran added additional methods.
 
