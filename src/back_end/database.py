@@ -4,13 +4,14 @@ database.py stores fitness data for the cyberfitness application.
 The basic structure of the database is as follows:
     [
     {'database_name': database_name, 'version': version}
-    {'name': username, 'password': password, 'classname': fitness_data, 'classname': fitness_data, etc...}
-    {'name': username, 'password': password, 'classname': fitness_data, 'classname': fitness_data, etc...}
+    {'name': username, 'password': password, 'classname_goal': fitness_goal, 'classname': fitness_data, etc...}
+    {'name': username, 'password': password, 'classname_goal': fitness_goal, 'classname': fitness_data, etc...}
     etc...
     ]
 
 20200223 -- Jacob Cochran created the inital database with some methods.
 20200301 -- Jacob Cochran added additional methods.
+20200302 -- Jacob Cochran added additional methods.
 
 '''
 
@@ -83,12 +84,39 @@ class database(object):
             for i in pickle_file[1:]:
                 if i.get('name') == username:
                     if i.get('password') == password:
-                        user_data = pickle_file
+                        user_data = pickle_file # User successfully authenticated
         if user_data == None:
             return -1   # Failed authentication
         for index, i in enumerate(pickle_file):
             if i.get('name') == username:
                 pickle_file[index].update({class_name : class_data})
+        with open(self.database_name + "." + self.version + ".db", 'wb') as write_db:
+            pickle.dump(user_data, write_db)
+    
+    
+    def db_goal(self, username, password, class_name, class_data):
+        '''
+        Inserts/updates fitness goal to a user's database. Returns -1 if authentication 
+        fails.
+        
+        :param username: Username.
+        :param password: User's password.
+        :param class_name: User's class name.
+        :param class_data: User's class data contained in its own class.
+        '''
+        
+        user_data = None
+        with open(self.database_name + "." + self.version + ".db", 'rb') as open_db:
+            pickle_file = pickle.load(open_db)
+            for i in pickle_file[1:]:
+                if i.get('name') == username:
+                    if i.get('password') == password:
+                        user_data = pickle_file # User successfully authenticated
+        if user_data == None:
+            return -1   # Failed authentication
+        for index, i in enumerate(pickle_file):
+            if i.get('name') == username:
+                pickle_file[index].update({class_name + "_goal" : class_data})
         with open(self.database_name + "." + self.version + ".db", 'wb') as write_db:
             pickle.dump(user_data, write_db)
     
@@ -109,7 +137,7 @@ class database(object):
             for i in pickle_file[1:]:
                 if i.get('name') == username:
                     if i.get('password') == password:
-                        user_data = pickle_file
+                        user_data = pickle_file # User successfully authenticated
         if user_data == None:
             return -1   # Failed authentication
         for index, i in enumerate(pickle_file):
@@ -132,8 +160,33 @@ class database(object):
             for i in pickle_file[1:]:
                 if i.get('name') == username:
                     if i.get('password') == password:
-                        return i
+                        return i    # User successfully authenticated
             return -1   # Failed authentication
+    
+    
+    def compare_goal(self, username, password, class_name):
+        '''
+        Inserts/updates fitness goal to a user's database. Returns 1 if the goal has been reached,
+        otherwise it returns 2. Returns -1 if authentication fails.
+        
+        :param username: Username.
+        :param password: User's password.
+        :param class_name: User's class name.
+        '''
+        
+        user_data = None
+        with open(self.database_name + "." + self.version + ".db", 'rb') as open_db:
+            pickle_file = pickle.load(open_db)
+            for i in pickle_file[1:]:
+                if i.get('name') == username:
+                    if i.get('password') == password:
+                        user_data = i   # User successfully authenticated
+        if user_data == None:
+            return -1   # Failed authentication
+        if user_data[class_name + '_goal'] == user_data[class_name]:
+            return 1    # Goal has been reached
+        else:
+            return 2    # Goal has not been reached
 
 
 if __name__ == '__main__':
@@ -156,5 +209,8 @@ if __name__ == '__main__':
     print(test.db_query("bill", "abc123!!!"))
     test.db_delete("bill", "abc123!!!", "running")
     print(test.db_query("bill", "abc123!!!"))
+    test.db_goal("bill", "abc123!!!", "swimming", "1mile")
+    print(test.db_query("bill", "abc123!!!"))
+    print(test.compare_goal("bill", "abc123!!!", "swimming"))
     
     
