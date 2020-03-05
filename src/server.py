@@ -1,6 +1,11 @@
 import os, random, sys
+from back_end import database
 from http.server import HTTPServer
 from http.server import CGIHTTPRequestHandler as CGIHandler
+
+db = database.database("CYBERFITNESS", "1")
+db.create_table()
+sys.path.append('..')
 
 def display_server_info(port):
     main_module_dirname = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -28,5 +33,10 @@ def main():
             server.shutdown()
     except KeyboardInterrupt:
         print("Keyboard interrupt, exiting gracefully")
+    finally:
+        try:
+            os.remove('current_user.txt')
+        except:
+            pass
 if __name__ == "__main__":
     main()

@@ -34,13 +34,13 @@ print("Content-type:text/html\n")
 print("<html><body>")
 if len(classes) > 0:
     print("""
-     <form action="/cgi-bin/handle_remove.py" method="post">
+     <form action="/cgi-bin/handle_run.py" method="post">
      <select name="choice">""")
     for cls in classes:
         print("<OPTION Value={}>{}</OPTION>".format(cls, cls))
     print("""
         </select><input type="submit" value="Submit"></input></form>""")
 else:
-    print("<text>NO CLASSES TO REMOVE</text>")
+    print("<text>NO CLASSES TO RUN</text>")
     print(continue_string.format('gym_welcome.py'))
 print("</body></html>")

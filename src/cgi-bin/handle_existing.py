@@ -1,11 +1,17 @@
-import cgi
+import cgi, os, string, sys
+normal_sys = sys.path
+sys.path.append(os.path.abspath(os.pardir) + "\\src\\")
+import FitnessClasses as fc
+from back_end.database import database
+
+sys.path = normal_sys
 
 form = cgi.FieldStorage()
 
-print("Content-type:text/html")
-
 username = form.getvalue("username")
 password = form.getvalue("password")
+
+print("Content-type:text/html")
 
 continue_string = """
 <div>
@@ -14,9 +20,13 @@ continue_string = """
 </form>
 </div>
 """
-print("<html><body>")
-# Need to instantiate database first before this can run
-if DATABASE.db_query(username, password) == -1:
+
+db = database("CYBERFITNESS", "1")
+
+print("<html><body><center>")
+with open('current_user.txt', 'w') as fd:
+    fd.write(username + '\n' + password)
+if db.db_query(username, password) == -1:
     print("<text>No user by those credentials</text>")
     print(continue_string.format("existing_user.py"))
     # Continue button sends user to "index.html"
@@ -25,4 +35,4 @@ else:
     print(continue_string.format("gym_welcome.py"))
     # Continue button sends user to "Gym interface"
 
-print("</body></html>")
+print("</center></body></html>")

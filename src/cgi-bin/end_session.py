@@ -1,4 +1,6 @@
-import cgi
+import cgi, os
+
+os.remove('current_user.txt')
 
 print("Content-type:text/html")
 

@@ -48,6 +48,17 @@ class database(object):
                 pickle.dump(database, create_db)
     
     
+    def check_if_user_in_db(self, username):
+        '''
+        param username: Username
+        '''
+        with open(self.database_name + "." + self.version + ".db", 'rb') as open_db:
+            pickle_file = pickle.load(open_db)
+            for i in pickle_file[1:]:
+                if i.get('name') == username:
+                    return True
+        return False
+    
     def add_user(self, username, password):
         '''
         Adds an user to the database. If user already exists,
@@ -146,6 +157,32 @@ class database(object):
         with open(self.database_name + "." + self.version + ".db", 'wb') as write_db:
             pickle.dump(user_data, write_db)
     
+    
+    def db_goal(self, username, password, class_name, class_data):
+        '''
+        Inserts/updates fitness goal to a user's database. Returns -1 if authentication 
+        fails.
+        
+        :param username: Username.
+        :param password: User's password.
+        :param class_name: User's class name.
+        :param class_data: User's class data contained in its own class.
+        '''
+        
+        user_data = None
+        with open(self.database_name + "." + self.version + ".db", 'rb') as open_db:
+            pickle_file = pickle.load(open_db)
+            for i in pickle_file[1:]:
+                if i.get('name') == username:
+                    if i.get('password') == password:
+                        user_data = pickle_file # User successfully authenticated
+        if user_data == None:
+            return -1   # Failed authentication
+        for index, i in enumerate(pickle_file):
+            if i.get('name') == username:
+                pickle_file[index].update({class_name + "_goal" : class_data})
+        with open(self.database_name + "." + self.version + ".db", 'wb') as write_db:
+            pickle.dump(user_data, write_db)
     
     def db_query(self, username, password):
         '''

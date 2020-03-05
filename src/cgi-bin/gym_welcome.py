@@ -1,12 +1,24 @@
+import cgi
+
+form = cgi.FieldStorage()
+
 print("Content-type:text/html")
+print("<html><body>")
+
+# Set
+# Check
+# Remove
 
 print("""
-<html></body><center>
-<li><a href="/cgi-bin/join_class.py">Join class</a></li>
-<li><a href="/cgi-bin/set_goals.py">Set your fitness goals</a></li>
-<li><a href="/cgi-bin/display_classes.py">Display current classes</a></li>
-<li><a href="/cgi-bin/check_goals.py">Check if your goals have been met</a></li>
-<li><a href="/cgi-bin/remove_class.py">Remove class</a></li>
-<li><a href="/cgi-bin/end_session.py">End session</a></li>
-</center></body></html>
-""")
+ <form action="/cgi-bin/handle_gym_choice.py" method="post">
+            <select name="choice">
+                <OPTION Value="join" selected>Join Class</OPTION>
+                <OPTION Value="set">Set Goals</OPTION>
+                <OPTION Value="display">Display Classes</OPTION>
+                <OPTION Value="run">Run Class</OPTION>
+                <OPTION Value="remove">Remove Class</OPTION>
+                <OPTION Value="end">Exit</OPTION>
+            </select>
+        <input type="submit" value="Submit"></input>
+        </form>""")
+print("</body></html>")
